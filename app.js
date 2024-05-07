@@ -4,27 +4,31 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
+import { globalErrorHandler } from './controllers/errorController.js';
+import { userRouter } from './routes/userRouter.js';
+import { waterRouter } from './routes/waterRouter.js';
+
+dotenv.config();
 
 const app = express();
-dotenv.config();
-// mongoose
-//   .connect(...!)
-//   .then(() => console.log('Database connection successful'))
-//   .catch(error => {
-//     console.log(error.message);
-//     process.exit(1);
-//   });
+
+mongoose
+  .connect(process.env.DB_URL)
+  .then(() => console.log('Database connection successful'))
+  .catch(error => {
+    console.log(error.message);
+    process.exit(1);
+  });
 
 app.use(morgan('tiny'));
-
 app.use(cors());
 app.use(express.json());
 
 const pathPrefix = '/api';
 
-app.use('/users',);
+app.use(`${pathPrefix}/users`, userRouter);
 
-app.use(`${pathPrefix}/contacts`,);
+app.use(`${pathPrefix}/water`, waterRouter);
 
 app.use((_, res) => {
   res.status(404).json({ message: 'Route not found' });
@@ -35,7 +39,9 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message });
 });
 
-const port = +process.env.PORT|| 3000 ;
+const port = +process.env.PORT || 3000;
+
+app.use(globalErrorHandler);
 
 app.listen(port, () => {
   console.log(`Server is running. Use our API on port: ${port}`);
