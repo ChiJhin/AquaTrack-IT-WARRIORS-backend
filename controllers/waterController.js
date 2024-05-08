@@ -18,4 +18,8 @@ export const addWaterData = async (req, res) => {
   } catch (error) {
     throw HttpError(400, error.message)
   }
+};
+
+export const updateWaterData = async (req, res) => {
+  
 }
