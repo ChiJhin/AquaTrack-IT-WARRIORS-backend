@@ -1,3 +1,1 @@
-export const userRouter = () => {
-  
-}
+export const userRouter = () => {};
