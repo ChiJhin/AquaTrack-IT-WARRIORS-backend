@@ -1,7 +1,8 @@
 import HttpError from "../helpers/HttpError.js";
+import { User } from "../models/userModel.js";
 import { checkToken } from "../services/jwtServices.js";
 
-export const protect = async (req, res, next) => {
+export const authenticate = async (req, res, next) => {
   const getToken = req.headers.authorization?.startsWith('Bearer') &&
     req.headers.authorization.split(' ')[1];
   
