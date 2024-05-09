@@ -1,10 +1,10 @@
 import HttpError from "../helpers/HttpError.js";
+import { User } from "../models/userModel.js";
 import { checkToken } from "../services/jwtServices.js";
 
-export const protect = async (req, res, next) => {
+export const authenticate = async (req, res, next) => {
   const getToken = req.headers.authorization?.startsWith('Bearer') &&
     req.headers.authorization.split(' ')[1];
-  
   const id = checkToken(getToken);
 
   if (!id) {
@@ -12,7 +12,6 @@ export const protect = async (req, res, next) => {
   };
 
   const currentUser = await User.findById(id);
-
   if (!currentUser) {
     throw HttpError(401, "Unauthorized")
   };
@@ -22,7 +21,7 @@ export const protect = async (req, res, next) => {
     req.user = currentUser;
     next();
   } else {
-    
+    console.log("tokens", currentUser.token, getToken);
     res.status(401).json({
       message: 'Unauthorized'
     });
