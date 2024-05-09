@@ -12,6 +12,39 @@ export const userRouter = express.Router();
  *   post:
  *     summary: Registering a user
  *     description: Public route to register a user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: Jessica.Smith@gmail.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *     responses:
+ *       '201':
+ *         description: Created 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 email:
+ *                   type: string
+ *                   format: email
+ *                   example: Jessica.Smith@gmail.com
+ *       '409':
+ *         description: The email provided is already in use. 
+ *       '500':
+ *         description: Unexpected Server Error. 
+ *  
 */
 userRouter.post('/register', 
     validateBody(Schemas.registerSchema), 
@@ -23,6 +56,40 @@ userRouter.post('/register',
  *   post:
  *     summary: User Login Route
  *     description: Public route for user login
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: Jessica.Smith@gmail.com
+ *               password:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Logged In Successfully 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   example: ABCD_EFGH_123456
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     email: 
+ *                       type: string
+ *                       format: email
+ *                       example: Jessica.Smith@gmail.com           
+ *       '500':
+ *         description: Unexpected Server Error. 
+
 */
 userRouter.post('/login', 
     validateBody(Schemas.loginSchema), 
@@ -34,6 +101,13 @@ userRouter.post('/login',
  *   get:
  *     summary: Log Out Current User
  *     description: Private route to logout current user
+ *     security:
+ *       - cookieAuth: []
+ *     headers: 
+ *       Set-Cookie:
+ *         schema: 
+ *           type: string
+ *           example: Authorization=Bearer abcde12345
  */
 userRouter.get('/logout', 
     authenticate, 

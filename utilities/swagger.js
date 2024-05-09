@@ -6,6 +6,18 @@ const swaggerDefinition = {
     title: "Express API for DrinkWater App",
     version: "0.0.1",
   },
+  components: {
+    securitySchemes: {
+      cookieAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        in: "cookie",
+        name: "Authorization",
+        example: "Bearer abcde12345"
+      }
+    }
+  }  
 };
 
 const options = {
