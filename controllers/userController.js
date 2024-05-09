@@ -1,8 +1,8 @@
-import { loginDataService, logoutUserDataService, registerDataService } from "../services/userServices";
+import { loginDataService, logoutUserDataService, registerDataService, updateUserUserDataService } from "../services/userServices.js";
 
 export const register = async (req, res, next) => {
-    const { email, password } = req.body;
-    const newUser = await registerDataService(email, password)
+    const { email, name, password } = req.body;
+    const newUser = await registerDataService(email, name, password)
 
     res.status(201).json({
       user: { email: newUser.email },
@@ -30,6 +30,6 @@ export const current = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     const userId = req.user._id;
-    updatedObject = await updateUserUserDataService(userId, req.body);
+    const updatedObject = await updateUserUserDataService(userId, req.body);
     res.json(updatedObject)
 };

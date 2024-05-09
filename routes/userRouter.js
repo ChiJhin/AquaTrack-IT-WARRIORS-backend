@@ -3,7 +3,7 @@ import { authenticate } from "../middlewars/authenticate.js";
 import { validateBody } from "../middlewars/validateBody.js";
 import { Schemas } from "../models/userModel.js";
 import { errorHandlingWrapper } from "../helpers/errorHandlingWrapper.js";
-export * from "../controllers/userController.js";
+import * as controllers from "../controllers/userController.js";
 export const userRouter = express.Router();
 
 /**
@@ -14,8 +14,8 @@ export const userRouter = express.Router();
  *     description: Public route to register a user
 */
 userRouter.post('/register', 
-    validateBody(Schemas.registerLoginSchema), 
-    errorHandlingWrapper(register));
+    validateBody(Schemas.registerSchema), 
+    errorHandlingWrapper(controllers.register));
 
 /**
  * @swagger
@@ -25,19 +25,19 @@ userRouter.post('/register',
  *     description: Public route for user login
 */
 userRouter.post('/login', 
-    validateBody(Schemas.registerLoginSchema), 
-    errorHandlingWrapper(login));
+    validateBody(Schemas.loginSchema), 
+    errorHandlingWrapper(controllers.login));
 
 /**
  * @swagger
  * /logout:
- *   post:
+ *   get:
  *     summary: Log Out Current User
  *     description: Private route to logout current user
  */
-userRouter.post('/logout', 
+userRouter.get('/logout', 
     authenticate, 
-    errorHandlingWrapper(logout));
+    errorHandlingWrapper(controllers.logout));
 
 /**
  * @swagger
@@ -48,7 +48,7 @@ userRouter.post('/logout',
 */
 userRouter.get('/current', 
     authenticate, 
-    errorHandlingWrapper(current));
+    errorHandlingWrapper(controllers.current));
 
 /**
  * @swagger
@@ -59,7 +59,7 @@ userRouter.get('/current',
 */
 userRouter.patch('/update', 
     authenticate, 
-    errorHandlingWrapper(updateUser));
+    errorHandlingWrapper(controllers.updateUser));
 
 
 export default userRouter;

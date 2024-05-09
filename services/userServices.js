@@ -1,7 +1,11 @@
+import bcrypt from "bcrypt";
+import gravatar from "gravatar";
+import jwt from "jsonwebtoken";
+
 import { User } from "../models/userModel.js"
 import HttpError from '../helpers/HttpError.js'
 
-export const registerDataService = async (email, password) => {
+export const registerDataService = async (email, name, password) => {
     if ((await User.findOne({ email: email })) !== null) {
         throw HttpError(409, "Email in use");
       }
@@ -9,9 +13,10 @@ export const registerDataService = async (email, password) => {
       const hashedPassword = await bcrypt.hash(password, 10);
       const avatarURL = gravatar.url(email);
     
-      return await mongooseUserModel.create({
+      return await User.create({
         password: hashedPassword,
         email: email,
+        name: name,
         avatarURL //verificationToken = nanoid() // Additional task
       });
 }
@@ -26,14 +31,13 @@ export const loginDataService = async (email, password) => {
       throw HttpError(401, "Email or password is wrong");
   
     const payload = { id: foundUser._id };
-    const secret = process.env.SECRET_WORD;
+    const secret = process.env.SECRET;
     const generatedToken = jwt.sign(payload, secret);
   
     await User.findByIdAndUpdate(
         foundUser.id, {token: generatedToken});
     return generatedToken;
 }
-
 
 export const logoutUserDataService = async (userId) => {
     await User.findByIdAndUpdate(

@@ -1,4 +1,4 @@
-import Joi, { valid } from "joi";
+import Joi from "joi";
 import { model, Schema } from "mongoose";
 
 const emailRegexp = /^\S+@\S+\.\S+$/;
@@ -62,9 +62,15 @@ const userSchema = new Schema(
     }
   );
 
-const registerLoginSchema = Joi.object({
+const registerSchema = Joi.object({
+    name: Joi.string().required(),
     email: Joi.string().pattern(emailRegexp).required(),
-    password: Joi.string().min(8).max(22).required()
+    password: Joi.string().min(4).max(22).required()
+});
+
+const loginSchema = Joi.object({
+    email: Joi.string().pattern(emailRegexp).required(),
+    password: Joi.string().min(4).max(22).required()
 })
 
 const updateUserSchema = Joi.object({
@@ -79,7 +85,8 @@ const updateUserSchema = Joi.object({
 })
 
 export const Schemas = {
-    registerLoginSchema,
+    registerSchema,
+    loginSchema,
     updateUserSchema
 }
-export const User = model('user', userSchema)
+export const User = model('users', userSchema)

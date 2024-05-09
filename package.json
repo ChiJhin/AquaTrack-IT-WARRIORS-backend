@@ -16,6 +16,7 @@
     "express": "^4.19.2",
     "fs": "^0.0.1-security",
     "fs-extra": "^11.2.0",
+    "gravatar": "^1.8.2",
     "jimp": "^0.22.12",
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
