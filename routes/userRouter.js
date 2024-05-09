@@ -4,7 +4,8 @@ import { validateBody } from "../middlewars/validateBody.js";
 import { Schemas } from "../models/userModel.js";
 import { errorHandlingWrapper } from "../helpers/errorHandlingWrapper.js";
 import * as controllers from "../controllers/userController.js";
-export const userRouter = express.Router();
+
+const userRouter = express.Router();
 
 /**
  * @swagger
@@ -102,12 +103,12 @@ userRouter.post('/login',
  *     summary: Log Out Current User
  *     description: Private route to logout current user
  *     security:
- *       - cookieAuth: []
+ *       - bearerAuth: []
  *     headers: 
- *       Set-Cookie:
- *         schema: 
- *           type: string
- *           example: Authorization=Bearer abcde12345
+ *       schema: 
+ *         name: Authorization
+ *         type: string
+           example: Bearer abcde_12345
  */
 userRouter.get('/logout', 
     authenticate, 

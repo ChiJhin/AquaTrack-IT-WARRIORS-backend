@@ -8,11 +8,10 @@ const swaggerDefinition = {
   },
   components: {
     securitySchemes: {
-      cookieAuth: {
+      bearerAuth: {
         type: "http",
         scheme: "bearer",
         bearerFormat: "JWT",
-        in: "cookie",
         name: "Authorization",
         example: "Bearer abcde12345"
       }
