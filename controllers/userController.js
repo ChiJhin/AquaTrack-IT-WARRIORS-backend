@@ -1,4 +1,4 @@
-import { loginDataService, logoutUserDataService, registerDataService, updateUserUserDataService } from "../services/userServices.js";
+import { loginDataService, logoutUserDataService, regenerateTokenDataService, registerDataService, updateUserUserDataService } from "../services/userServices.js";
 
 export const register = async (req, res, next) => {
     const { email, name, password } = req.body;
@@ -14,7 +14,7 @@ export const login = async (req, res) => {
     const generatedToken = await loginDataService(email, password);
     res.status(200).json({
         token: generatedToken,
-        user: { email: email },
+        user: { email },
       });
 };
 
@@ -29,7 +29,14 @@ export const current = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-    const userId = req.user._id;
-    const updatedObject = await updateUserUserDataService(userId, req.body);
+    const updatedObject = await updateUserUserDataService(req.user._id, req.body);
     res.json(updatedObject)
+};
+
+export const regenerateToken = async (req, res) => {
+    const generatedToken = await regenerateTokenDataService(req.user._id);
+    res.status(200).json({
+        token: generatedToken,
+        user: { email: req.user.email },
+      });
 };

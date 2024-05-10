@@ -21,7 +21,7 @@ export const registerDataService = async (email, name, password) => {
       });
 }
 export const loginDataService = async (email, password) => {
-    const foundUser = await User.findOne({ email: email });
+    const foundUser = await User.findOne({ email });
 
     if (!foundUser)
       throw HttpError(401, "Email or password is wrong");
@@ -31,8 +31,7 @@ export const loginDataService = async (email, password) => {
       throw HttpError(401, "Email or password is wrong");
   
     const payload = { id: foundUser._id };
-    const secret = process.env.SECRET;
-    const generatedToken = jwt.sign(payload, secret);
+    const generatedToken = jwt.sign(payload, process.env.SECRET);
   
     await User.findByIdAndUpdate(
         foundUser.id, {token: generatedToken});
@@ -51,4 +50,12 @@ export const updateUserUserDataService = async (userId, params) => {
     if (!foundUser)
         throw HttpError(401, 'User not found');
     return await User.findByIdAndUpdate(userId, params, { new: true });
+}
+
+export const regenerateTokenDataService = async (userId) => {
+    const payload = { id: userId };
+    const generatedToken = jwt.sign(payload, process.env.SECRET);
+    await User.findByIdAndUpdate(
+        userId, {token: generatedToken});
+    return generatedToken;
 }

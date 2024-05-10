@@ -7,23 +7,22 @@ export const authenticate = async (req, res, next) => {
     req.headers.authorization.split(' ')[1];
   const id = checkToken(getToken);
 
-  if (!id) {
-    throw HttpError(401, "Unauthorized")
-  };
-
-  const currentUser = await User.findById(id);
-  if (!currentUser) {
-    throw HttpError(401, "Unauthorized")
-  };
-
-  if (currentUser && currentUser.token === getToken) {
-
-    req.user = currentUser;
-    next();
-  } else {
-    console.log("tokens", currentUser.token, getToken);
+  if (!id)
     res.status(401).json({
       message: 'Unauthorized'
     });
-  };
+
+  const currentUser = await User.findById(id);
+  if (!currentUser)
+    res.status(401).json({
+      message: 'Unauthorized'
+    });
+
+  if (currentUser && currentUser.token === getToken) {
+    req.user = currentUser;
+    next();
+  } else
+      res.status(401).json({
+        message: 'Unauthorized'
+      });
 };

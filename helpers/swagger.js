@@ -6,6 +6,16 @@ const swaggerDefinition = {
     title: "Express API for DrinkWater App",
     version: "0.0.1",
   },
+  tags: [        // by default: empty Array
+    {
+      name: 'User API',
+      description: 'Routes Related to User Operations',
+    },
+    {
+        name: 'Water API',
+        description: 'Water Consumption Routes'
+    }
+  ],
   components: {
     securitySchemes: {
       bearerAuth: {
