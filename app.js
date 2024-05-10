@@ -8,7 +8,7 @@ import { globalErrorHandler } from "./controllers/errorController.js";
 import userRouter from "./routes/userRouter.js";
 import waterRouter from "./routes/waterRouter.js";
 import swaggerUi from "swagger-ui-express";
-import { swaggerSpec } from "./utilities/swagger.js";
+import { swaggerSpec } from "./helpers/swagger.js";
 
 dotenv.config();
 
