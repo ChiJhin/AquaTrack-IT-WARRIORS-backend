@@ -1,25 +1,68 @@
+import { isValidObjectId } from "mongoose";
+
 import HttpError from "../helpers/HttpError.js";
-import { addWaterDataService } from "../services/waterServices.js"
+import { addWaterDataService, daylyWaterData, deleteWaterDateService, updateWaterDataService } from "../services/waterServices.js"
+import { catchAsyncErr } from "../helpers/catchAsyncError.js";
 
 
-export const addWaterData = async (req, res) => {
-  try {
-    const { value } = req.body;
-    console.log(value)
-    const newWaterData = await addWaterDataService(req.body);
+export const addWaterData = catchAsyncErr(async (req, res) => {
+   
+    const waterData = await addWaterDataService(req.body);
 
-    if (newWaterData) {
-      res.status(201).json(newWaterData)
+    if (waterData) {
+      res.status(201).json(waterData)
     } else {
       res.status(404).json({
         message: 'Not found'
       })
     }
-  } catch (error) {
-    throw HttpError(400, error.message)
-  }
-};
+});
 
-export const updateWaterData = async (req, res) => {
+export const updateWaterData = catchAsyncErr(async (req, res) => {
+
+    const isVlidId = isValidObjectId(req.params.id);
+    console.log(isVlidId)
+    
+    if (isVlidId) {
+      const updated = await updateWaterDataService(req.params.id, req.body);
+
+      if (updated) {
+        res.status(200).json(updated)
+      } else {
+        res.status(404).json({
+          message: 'Not found1'
+        })
+      }
+    } else {
+      res.status(404).json({
+        message: 'Not found2'
+      })
+    }
+});
+
+export const deleteWaterData = catchAsyncErr(async (req, res) => {
+  const isValide = isValidObjectId(req.params.id);
+
+  if (!isValide) {
+    throw HttpError(404, 'Not found')
+  }
+
+  const deletedData = await deleteWaterDateService(req.params.id);
+
+  if (!deletedData) {
+    throw HttpError(404, 'Not found')
+  }
+
+  res.status(200).json({
+    deletedData,
+    message: 'Water info was delete'
+  })
+});
+
+export const getWaterDataPerDay = catchAsyncErr(async (req, res) => {
+  const waterDataPerDay = await daylyWaterData();
+
+  if (!waterDataPerDay) throw HttpError(404, 'Not found');
   
-}
+  res.status(200).json(waterDataPerDay)
+})

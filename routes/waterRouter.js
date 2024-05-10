@@ -1,11 +1,16 @@
 import express from "express";
-import { addWaterData, updateWaterData } from "../controllers/waterController.js";
+import { addWaterData, deleteWaterData, getWaterDataPerDay, updateWaterData } from "../controllers/waterController.js";
+import { checkUpdateWaterData } from "../middlewars/waterMiddlewrs.js";
 
 const waterRouter = express.Router();
 
+// waterRouter.use(protect)
+
 waterRouter
   .post('/', addWaterData)
-  .put('/:id', updateWaterData);
+  .put('/:id', checkUpdateWaterData, updateWaterData)
+  .delete('/:id', deleteWaterData)
+  .get('/', getWaterDataPerDay);
 
 
 export default waterRouter;
