@@ -18,9 +18,14 @@ export const updateWaterSchema = Joi.object({
 })
   .options({ abortEarly: false });
 
-  export const querySchema = Joi.object({
-    month: Joi.string()
-      .pattern(monthlyRegex)
-      .message('Date of month must be mm.yyyy')
-      .required()
+export const querySchema = Joi.object({
+  year: Joi.string()
+    .pattern(/^\d{4}$/)
+    .message("Year must be yyyy"),
+  month: Joi.string()
+    .pattern(/^\d{2}$/)
+    .message('Month must be mm'),
+  day: Joi.string()
+    .pattern(/^\d{2}$/)
+    .message('Day must be dd'),
 });

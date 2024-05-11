@@ -61,31 +61,33 @@ export const deleteWaterDateService = async (id) => {
   }
 };
 
-export const daylyWaterData = async (day) => {
-  try {
-    const daylyWater = await Water.find({date: {$eq: day}}).exec();
+export const waterDataPerPeriod = async (year, month, day) => {
+try {
+  let query = { date: { $regex: `${day}.${month}.${year}` } };
+  
+  if (month) {
+    query.date.$regex = `${month}.${year}`;
 
-    if (!daylyWater) throw HttpError(404, 'Not found');
-
-    return daylyWater;
-  } catch (error) {
-    throw error.message
+    if (day) {
+      query.date.$regex = `${day}.${month}.${year}`
+    }
   }
+
+  const waterData = await Water.find(query);
+
+  if (!waterData) {
+    throw HttpError(404, 'Not found')
+  }
+
+  let totalValue = 0;
+  waterData.forEach(data => {
+    totalValue += data.value
+  })
+
+  return {waterData, totalValue};
+} catch (error) {
+  throw error.message
+}
 };
 
-export const monthlyWaterData = async(month) => {
-  try {
 
-    // const regexMonth = new RegExp(`^${month}\\.\d{4}$`)
-    const monthlyWater = await Water.find({ date: { $regex: month } });
-    console.log(monthlyWater)
-    
-    if (!monthlyWater || monthlyWater.length === 0) {
-      throw HttpError(404, 'Not found')
-    };
-    
-    return {monthlyWater};
-  } catch (error) {
-    throw error.message
-  }
-}
