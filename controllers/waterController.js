@@ -1,7 +1,7 @@
 import { isValidObjectId } from "mongoose";
 
 import HttpError from "../helpers/HttpError.js";
-import { addWaterDataService, daylyWaterData, deleteWaterDateService, updateWaterDataService, monthlyWaterData } from "../services/waterServices.js"
+import { addWaterDataService, deleteWaterDateService, updateWaterDataService, waterDataPerPeriod } from "../services/waterServices.js"
 import { catchAsyncErr } from "../helpers/catchAsyncError.js";
 
 export const addWaterData = catchAsyncErr(async (req, res) => {
@@ -58,24 +58,15 @@ export const deleteWaterData = catchAsyncErr(async (req, res) => {
   })
 });
 
-export const getWaterDataPerDay = catchAsyncErr(async (req, res) => {
-  
-  const day = req.query.day;
-  const waterDataPerDay = await daylyWaterData(day);
+export const getWaterDataPerPeriod = catchAsyncErr(async (req, res) => {
+  const { year, month, day } = req.query;
+  const { totalValue } = req.body;
 
-  if (!waterDataPerDay) throw HttpError(404, 'Not found');
+  const period = await waterDataPerPeriod(year, month, day);
   
-  res.status(200).json(waterDataPerDay)
-});
-
-export const getWaterDataPerMonth = catchAsyncErr(async (req, res) => {
-  const month = req.query.month;
-
-  const waterDataPerMonth = await monthlyWaterData(month);
-  
-  if (!waterDataPerMonth || waterDataPerMonth.length === 0) {
+  if (!period || period.length === 0) {
     throw HttpError(404, 'Not found')
   };
 
-  res.status(200).json(waterDataPerMonth)
+  res.status(200).json({period, totalValue})
 });
