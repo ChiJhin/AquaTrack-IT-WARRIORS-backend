@@ -5,10 +5,9 @@ import { addWaterDataService, deleteWaterDateService, updateWaterDataService, wa
 import { catchAsyncErr } from "../helpers/catchAsyncError.js";
 
 export const addWaterData = catchAsyncErr(async (req, res) => {
-   
-    const waterData = await addWaterDataService(req.body);
-
-    if (waterData) {
+    const waterData = await addWaterDataService(req.body, req.user);
+    
+  if (waterData) {
       res.status(201).json(waterData)
     } else {
       res.status(404).json({
@@ -20,11 +19,10 @@ export const addWaterData = catchAsyncErr(async (req, res) => {
 export const updateWaterData = catchAsyncErr(async (req, res) => {
 
     const isVlidId = isValidObjectId(req.params.id);
-    console.log(isVlidId)
     
     if (isVlidId) {
-      const updated = await updateWaterDataService(req.params.id, req.body);
-
+      const updated = await updateWaterDataService(req.params.id, req.body, req.user);
+console.log(updated)
       if (updated) {
         res.status(200).json(updated)
       } else {
@@ -46,7 +44,7 @@ export const deleteWaterData = catchAsyncErr(async (req, res) => {
     throw HttpError(404, 'Not found')
   }
 
-  const deletedData = await deleteWaterDateService(req.params.id);
+  const deletedData = await deleteWaterDateService(req.params.id, req.user);
 
   if (!deletedData) {
     throw HttpError(404, 'Not found')
@@ -62,11 +60,11 @@ export const getWaterDataPerPeriod = catchAsyncErr(async (req, res) => {
   const { year, month, day } = req.query;
   const { totalValue } = req.body;
 
-  const period = await waterDataPerPeriod(year, month, day);
+  const periodData = await waterDataPerPeriod(year, month, day, req.user);
   
-  if (!period || period.length === 0) {
+  if (!periodData || periodData.length === 0) {
     throw HttpError(404, 'Not found')
   };
 
-  res.status(200).json({period, totalValue})
+  res.status(200).json({periodData, totalValue})
 });

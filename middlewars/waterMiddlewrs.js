@@ -14,7 +14,7 @@ export const checkUpdateWaterData = catchAsyncErr(async (req, _, next) => {
   next();
 });
 
-export const validateQueryByMonth = catchAsyncErr(async (req, _, next) => {
+export const validateQuery = catchAsyncErr(async (req, _, next) => {
   const { value, error } = querySchema.validate(req.query);
 
   if (error) throw HttpError(400, error.message);
