@@ -11,22 +11,24 @@ export const register = async (req, res, next) => {
   const newUser = await registerDataService(email, name, password);
 
   res.status(201).json({
-    user: { email: newUser.email },
-    token: newUser.token,
+    email: newUser.email,
+    authToken: newUser.authToken,
+    refreshToken: newUser.refreshToken,
   });
 };
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  const generatedToken = await loginDataService(email, password);
+  const user = await loginDataService(email, password);
   res.status(200).json({
-    token: generatedToken,
-    user: { email },
+    email,
+    authToken: user.authToken,
+    refreshToken: user.refreshToken,
   });
 };
 
 export const logout = async (req, res) => {
-  await logoutUserDataService(req.user._id);
+  await logoutUserDataService(req.user);
   res.status(204).json();
 };
 
@@ -54,14 +56,13 @@ export const current = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-  const updatedObject = await updateUserUserDataService(req.user._id, req.body);
-  res.json(updatedObject);
+  res.json(await updateUserUserDataService(req.user, req.body));
 };
 
-export const regenerateToken = async (req, res) => {
-  const generatedToken = await regenerateTokenDataService(req.user._id);
-  res.status(200).json({
-    token: generatedToken,
-    user: { email: req.user.email },
-  });
+export const refreshTokens = async (req, res) => {
+  console.log("Here we are");
+  const { authToken, refreshToken } = await regenerateTokenDataService(
+    req.user
+  );
+  res.status(200).json({ authToken, refreshToken });
 };

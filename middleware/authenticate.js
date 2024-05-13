@@ -1,28 +1,41 @@
-import HttpError from "../helpers/HttpError.js";
 import { User } from "../models/userModel.js";
 import { checkToken } from "../services/jwtServices.js";
 
 export const authenticate = async (req, res, next) => {
-  const getToken = req.headers.authorization?.startsWith('Bearer') &&
-    req.headers.authorization.split(' ')[1];
-  const id = checkToken(getToken);
+  try {
+    const token =
+      req.headers.authorization?.startsWith("Bearer") &&
+      req.headers.authorization.split(" ")[1];
 
-  if (!id)
-    res.status(401).json({
-      message: 'Unauthorized'
-    });
+    const id = checkToken(token);
+    const currentUser = id ? await User.findById(id) : null;
 
-  const currentUser = await User.findById(id);
-  if (!currentUser)
-    res.status(401).json({
-      message: 'Unauthorized'
-    });
-
-  if (currentUser && currentUser.token === getToken) {
-    req.user = currentUser;
-    next();
-  } else
+    if (id && currentUser && currentUser.authToken === token) {
+      req.user = currentUser;
+      next();
+    } else
       res.status(401).json({
-        message: 'Unauthorized'
+        message: "Unauthorized",
       });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const authenticateRefresh = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    const id = checkToken(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const currentUser = id ? await User.findById(id) : null;
+
+    if (id && currentUser && currentUser.refreshToken === refreshToken) {
+      req.user = currentUser;
+      next();
+    } else
+      res.status(401).json({
+        message: "Unauthorized",
+      });
+  } catch (error) {
+    next(error);
+  }
 };

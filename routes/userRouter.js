@@ -1,8 +1,11 @@
 import express from "express";
-import { authenticate } from "../middleware/authenticate.js";
+import {
+  authenticate,
+  authenticateRefresh,
+} from "../middleware/authenticate.js";
 import { validateBody } from "../middleware/validateBody.js";
 import { Schemas } from "../models/userModel.js";
-import { errorHandlingWrapper } from "../helpers/errorHandlingWrapper.js";
+import { errorHandling } from "../helpers/errorHandlingWrapper.js";
 import * as controllers from "../controllers/userController.js";
 
 const userRouter = express.Router();
@@ -10,20 +13,21 @@ userRouter
   .post(
     "/register",
     validateBody(Schemas.registerSchema),
-    errorHandlingWrapper(controllers.register)
+    errorHandling(controllers.register)
   )
   .post(
     "/login",
     validateBody(Schemas.loginSchema),
-    errorHandlingWrapper(controllers.login)
+    errorHandling(controllers.login)
   )
-  .get("/logout", authenticate, errorHandlingWrapper(controllers.logout))
-  .get("/current", authenticate, errorHandlingWrapper(controllers.current))
-  .patch("/update", authenticate, errorHandlingWrapper(controllers.updateUser))
+  .get("/logout", authenticate, errorHandling(controllers.logout))
+  .get("/current", authenticate, errorHandling(controllers.current))
+  .patch("/update", authenticate, errorHandling(controllers.updateUser))
   .patch(
-    "/token",
-    authenticate,
-    errorHandlingWrapper(controllers.regenerateToken)
+    "/refresh",
+    authenticateRefresh,
+    validateBody(Schemas.refreshSchema),
+    errorHandling(controllers.refreshTokens)
   );
 
 export default userRouter;
@@ -63,6 +67,13 @@ export default userRouter;
  *                   type: string
  *                   format: email
  *                   example: Jessica.Smith@gmail.com
+ *                   description: Email of the current user
+ *                 authToken:
+ *                   type: string
+ *                   description: Issued Authentication token
+ *                 refreshToken:
+ *                   type: string
+ *                   description: Refresh token, can be used to re-issue the Authentication token if expired
  *       '409':
  *         description: The email provided is already in use.
  *       '500':
@@ -94,16 +105,12 @@ export default userRouter;
  *             schema:
  *               type: object
  *               properties:
- *                 token:
+ *                 authToken:
  *                   type: string
- *                   example: ABCD_EFGH_123456
- *                 user:
- *                   type: object
- *                   properties:
- *                     email:
- *                       type: string
- *                       format: email
- *                       example: Jessica.Smith@gmail.com
+ *                   description: Issued Authentication token
+ *                 refreshToken:
+ *                   type: string
+ *                   description: Refresh token, can be used to re-issue the Authentication token if expired
  *       '401':
  *         description: Not Authorized
  *
@@ -198,10 +205,10 @@ export default userRouter;
  *         description: Not Authorized or User not Found
  *
  *
- * /token:
+ * /refresh:
  *   patch:
- *     summary: Generate Authentication Token
- *     description: Private route to re-generate authentivation token for current user
+ *     summary: Regenerate Authentication Tokens
+ *     description: Private route to re-generate authentication and refresh tokens
  *     tags: ["User API"]
  *     security:
  *       - bearerAuth: []
@@ -218,16 +225,12 @@ export default userRouter;
  *             schema:
  *               type: object
  *               properties:
- *                 token:
+ *                 authToken:
  *                   type: string
- *                   example: ABCD_EFGH_123456
- *                 user:
- *                   type: object
- *                   properties:
- *                     email:
- *                       type: string
- *                       format: email
- *                       example: Jessica.Smith@gmail.com
+ *                   description: Issued Authentication token
+ *                 refreshToken:
+ *                   type: string
+ *                   description: Refresh token, can be used to re-issue the Authentication token if expired
  *       '401':
  *         description: Not authorized
  */
