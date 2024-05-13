@@ -66,9 +66,9 @@ const userSchema = new Schema(
 );
 
 const registerSchema = Joi.object({
-  name: Joi.string().required(),
   email: Joi.string().pattern(emailRegexp).required(),
   password: Joi.string().min(4).max(22).required(),
+  name: Joi.string(),
 });
 
 const loginSchema = Joi.object({
@@ -77,7 +77,7 @@ const loginSchema = Joi.object({
 });
 
 const refreshSchema = Joi.object({
-  refreshToken:  Joi.string().required()
+  refreshToken: Joi.string().required(),
 });
 
 const updateUserSchema = Joi.object({
