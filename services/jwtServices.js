@@ -1,20 +1,37 @@
 import jwt from "jsonwebtoken";
 import HttpError from "../helpers/HttpError.js";
+import { User } from "../models/userModel.js";
 
 export const signToken = (id) =>
   jwt.sign({ id }, process.env.SECRET, {
-    expiresIn: '1d'
+    expiresIn: "1d",
   });
 
-export const checkToken = (token) => {
-  if (!token) throw HttpError(401, 'Unauthorized');
+export const checkToken = (token, secret = process.env.SECRET) => {
+  if (!token) throw HttpError(401, "Unauthorized");
 
   try {
-
-    const { id } = jwt.verify(token, process.env.SECRET);
+    const { id } = jwt.verify(token, secret);
     return id;
-
   } catch (error) {
-    throw HttpError(401, 'Unauthorized');
+    throw HttpError(401, "Unauthorized");
   }
+};
+
+export const generateTokens = async (user) => {
+  const payload = { id: user._id };
+
+  const authToken = jwt.sign(payload, process.env.SECRET, {
+    expiresIn: process.env.AUTH_EXPIRATION,
+  });
+
+  const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRATION,
+  });
+
+  return await User.findByIdAndUpdate(
+    user.id,
+    { authToken, refreshToken },
+    { new: true }
+  );
 };
