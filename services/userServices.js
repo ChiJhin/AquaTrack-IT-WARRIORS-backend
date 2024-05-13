@@ -6,7 +6,7 @@ import { User } from "../models/userModel.js"
 import HttpError from '../helpers/HttpError.js'
 
 export const registerDataService = async (email, name, password) => {
-    if ((await User.findOne({ email: email })) !== null) {
+    if ((await User.findOne({ email })) !== null) {
         throw HttpError(409, "Email in use");
       }
     

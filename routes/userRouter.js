@@ -1,18 +1,30 @@
-import express from "express"
-import { authenticate } from "../middlewars/authenticate.js";
-import { validateBody } from "../middlewars/validateBody.js";
+import express from "express";
+import { authenticate } from "../middleware/authenticate.js";
+import { validateBody } from "../middleware/validateBody.js";
 import { Schemas } from "../models/userModel.js";
 import { errorHandlingWrapper } from "../helpers/errorHandlingWrapper.js";
 import * as controllers from "../controllers/userController.js";
 
 const userRouter = express.Router();
 userRouter
-    .post('/register', validateBody(Schemas.registerSchema), errorHandlingWrapper(controllers.register))
-    .post('/login', validateBody(Schemas.loginSchema), errorHandlingWrapper(controllers.login))
-    .get('/logout', authenticate,  errorHandlingWrapper(controllers.logout))
-    .get('/current', authenticate, errorHandlingWrapper(controllers.current))
-    .patch('/update', authenticate, errorHandlingWrapper(controllers.updateUser))
-    .patch('/token', authenticate, errorHandlingWrapper(controllers.regenerateToken));
+  .post(
+    "/register",
+    validateBody(Schemas.registerSchema),
+    errorHandlingWrapper(controllers.register)
+  )
+  .post(
+    "/login",
+    validateBody(Schemas.loginSchema),
+    errorHandlingWrapper(controllers.login)
+  )
+  .get("/logout", authenticate, errorHandlingWrapper(controllers.logout))
+  .get("/current", authenticate, errorHandlingWrapper(controllers.current))
+  .patch("/update", authenticate, errorHandlingWrapper(controllers.updateUser))
+  .patch(
+    "/token",
+    authenticate,
+    errorHandlingWrapper(controllers.regenerateToken)
+  );
 
 export default userRouter;
 
@@ -41,7 +53,7 @@ export default userRouter;
  *                 format: password
  *     responses:
  *       '201':
- *         description: Created 
+ *         description: Created
  *         content:
  *           application/json:
  *             schema:
@@ -52,10 +64,10 @@ export default userRouter;
  *                   format: email
  *                   example: Jessica.Smith@gmail.com
  *       '409':
- *         description: The email provided is already in use. 
+ *         description: The email provided is already in use.
  *       '500':
- *         description: Unexpected Server Error. 
- *  
+ *         description: Unexpected Server Error.
+ *
  * /login:
  *   post:
  *     summary: User Login Route
@@ -76,7 +88,7 @@ export default userRouter;
  *                 type: string
  *     responses:
  *       '200':
- *         description: Logged In Successfully 
+ *         description: Logged In Successfully
  *         content:
  *           application/json:
  *             schema:
@@ -88,10 +100,10 @@ export default userRouter;
  *                 user:
  *                   type: object
  *                   properties:
- *                     email: 
+ *                     email:
  *                       type: string
  *                       format: email
- *                       example: Jessica.Smith@gmail.com           
+ *                       example: Jessica.Smith@gmail.com
  *       '401':
  *         description: Not Authorized
  *
@@ -102,8 +114,8 @@ export default userRouter;
  *     tags: ["User API"]
  *     security:
  *       - bearerAuth: []
- *     headers: 
- *       schema: 
+ *     headers:
+ *       schema:
  *         name: Authorization
  *         type: string
  *         example: Bearer abcde_12345
@@ -115,8 +127,8 @@ export default userRouter;
  *     tags: ["User API"]
  *     security:
  *       - bearerAuth: []
- *     headers: 
- *       schema: 
+ *     headers:
+ *       schema:
  *         name: Authorization
  *         type: string
  *         example: Bearer abcde_12345
@@ -128,8 +140,8 @@ export default userRouter;
  *     tags: ["User API"]
  *     security:
  *       - bearerAuth: []
- *     headers: 
- *       schema: 
+ *     headers:
+ *       schema:
  *         name: Authorization
  *         type: string
  *         example: Bearer abcde_12345
@@ -150,7 +162,7 @@ export default userRouter;
  *                 enum: [female, male]
  *               weight:
  *                 type: number
- *               dailyActivityTime: 
+ *               dailyActivityTime:
  *                 type: number
  *               dailyWaterNorm:
  *                 type: dailyWaterNorm
@@ -176,7 +188,7 @@ export default userRouter;
  *                   enum: [female, male]
  *                 weight:
  *                   type: number
- *                 dailyActivityTime: 
+ *                 dailyActivityTime:
  *                   type: number
  *                 dailyWaterNorm:
  *                   type: dailyWaterNorm
@@ -193,14 +205,14 @@ export default userRouter;
  *     tags: ["User API"]
  *     security:
  *       - bearerAuth: []
- *     headers: 
- *       schema: 
+ *     headers:
+ *       schema:
  *         name: Authorization
  *         type: string
  *         example: Bearer abcde_12345
  *     responses:
  *       '200':
- *         description: Token was regenerated successfully 
+ *         description: Token was regenerated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -212,10 +224,10 @@ export default userRouter;
  *                 user:
  *                   type: object
  *                   properties:
- *                     email: 
+ *                     email:
  *                       type: string
  *                       format: email
- *                       example: Jessica.Smith@gmail.com           
+ *                       example: Jessica.Smith@gmail.com
  *       '401':
  *         description: Not authorized
  */
