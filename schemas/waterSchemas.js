@@ -21,9 +21,8 @@ export const updateWaterSchema = Joi.object({
 export const querySchema = Joi.object({
   year: Joi.string()
     .pattern(/^\d{4}$/)
-    .message("Year must be yyyy")
-    .required()
-    .message("Parameter is required"),
+    .message("Year must be yyyy. Parameter is required")
+    .required(),
   month: Joi.string()
     .pattern(/^\d{2}$/)
     .message('Month must be mm'),
