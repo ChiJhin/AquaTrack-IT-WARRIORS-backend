@@ -60,7 +60,6 @@ export const updateUser = async (req, res) => {
 };
 
 export const refreshTokens = async (req, res) => {
-  console.log("Here we are");
   const { authToken, refreshToken } = await regenerateTokenDataService(
     req.user
   );
