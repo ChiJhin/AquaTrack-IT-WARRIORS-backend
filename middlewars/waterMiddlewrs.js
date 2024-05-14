@@ -19,5 +19,5 @@ export const validateQuery = catchAsyncErr(async (req, _, next) => {
 
   req.query = value;
 
-  next()
+  next();
 });
