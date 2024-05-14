@@ -5,8 +5,8 @@ import { authenticate } from "../middlewars/authenticate.js";
 
 const waterRouter = express.Router();
 
-waterRouter.use(authenticate)
 
+waterRouter.use(authenticate)
 waterRouter
   .post('/', addWaterData)
   .put('/:id', checkUpdateWaterData, updateWaterData)
