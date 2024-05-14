@@ -6,7 +6,7 @@ const swaggerDefinition = {
     title: "Express API for DrinkWater App",
     version: "0.0.1",
   },
-  tags: [        // by default: empty Array
+  tags: [
     {
       name: 'User API',
       description: 'Routes Related to User Operations',

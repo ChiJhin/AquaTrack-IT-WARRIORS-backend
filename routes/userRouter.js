@@ -1,18 +1,34 @@
-import express from "express"
-import { authenticate } from "../middlewars/authenticate.js";
-import { validateBody } from "../middlewars/validateBody.js";
+import express from "express";
+import {
+  authenticate,
+  authenticateRefresh,
+} from "../middleware/authenticate.js";
+import { validateBody } from "../middleware/validateBody.js";
 import { Schemas } from "../models/userModel.js";
-import { errorHandlingWrapper } from "../helpers/errorHandlingWrapper.js";
+import { errorHandling } from "../helpers/errorHandlingWrapper.js";
 import * as controllers from "../controllers/userController.js";
 
 const userRouter = express.Router();
 userRouter
-    .post('/register', validateBody(Schemas.registerSchema), errorHandlingWrapper(controllers.register))
-    .post('/login', validateBody(Schemas.loginSchema), errorHandlingWrapper(controllers.login))
-    .get('/logout', authenticate,  errorHandlingWrapper(controllers.logout))
-    .get('/current', authenticate, errorHandlingWrapper(controllers.current))
-    .patch('/update', authenticate, errorHandlingWrapper(controllers.updateUser))
-    .patch('/token', authenticate, errorHandlingWrapper(controllers.regenerateToken));
+  .post(
+    "/register",
+    validateBody(Schemas.registerSchema),
+    errorHandling(controllers.register)
+  )
+  .post(
+    "/login",
+    validateBody(Schemas.loginSchema),
+    errorHandling(controllers.login)
+  )
+  .get("/logout", authenticate, errorHandling(controllers.logout))
+  .get("/current", authenticate, errorHandling(controllers.current))
+  .patch("/update", authenticate, errorHandling(controllers.updateUser))
+  .patch(
+    "/refresh",
+    authenticateRefresh,
+    validateBody(Schemas.refreshSchema),
+    errorHandling(controllers.refreshTokens)
+  );
 
 export default userRouter;
 
@@ -41,7 +57,7 @@ export default userRouter;
  *                 format: password
  *     responses:
  *       '201':
- *         description: Created 
+ *         description: Created
  *         content:
  *           application/json:
  *             schema:
@@ -51,11 +67,18 @@ export default userRouter;
  *                   type: string
  *                   format: email
  *                   example: Jessica.Smith@gmail.com
+ *                   description: Email of the current user
+ *                 authToken:
+ *                   type: string
+ *                   description: Issued Authentication token
+ *                 refreshToken:
+ *                   type: string
+ *                   description: Refresh token, can be used to re-issue the Authentication token if expired
  *       '409':
- *         description: The email provided is already in use. 
+ *         description: The email provided is already in use.
  *       '500':
- *         description: Unexpected Server Error. 
- *  
+ *         description: Unexpected Server Error.
+ *
  * /login:
  *   post:
  *     summary: User Login Route
@@ -76,22 +99,18 @@ export default userRouter;
  *                 type: string
  *     responses:
  *       '200':
- *         description: Logged In Successfully 
+ *         description: Logged In Successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 token:
+ *                 authToken:
  *                   type: string
- *                   example: ABCD_EFGH_123456
- *                 user:
- *                   type: object
- *                   properties:
- *                     email: 
- *                       type: string
- *                       format: email
- *                       example: Jessica.Smith@gmail.com           
+ *                   description: Issued Authentication token
+ *                 refreshToken:
+ *                   type: string
+ *                   description: Refresh token, can be used to re-issue the Authentication token if expired
  *       '401':
  *         description: Not Authorized
  *
@@ -102,8 +121,8 @@ export default userRouter;
  *     tags: ["User API"]
  *     security:
  *       - bearerAuth: []
- *     headers: 
- *       schema: 
+ *     headers:
+ *       schema:
  *         name: Authorization
  *         type: string
  *         example: Bearer abcde_12345
@@ -115,8 +134,8 @@ export default userRouter;
  *     tags: ["User API"]
  *     security:
  *       - bearerAuth: []
- *     headers: 
- *       schema: 
+ *     headers:
+ *       schema:
  *         name: Authorization
  *         type: string
  *         example: Bearer abcde_12345
@@ -128,8 +147,8 @@ export default userRouter;
  *     tags: ["User API"]
  *     security:
  *       - bearerAuth: []
- *     headers: 
- *       schema: 
+ *     headers:
+ *       schema:
  *         name: Authorization
  *         type: string
  *         example: Bearer abcde_12345
@@ -150,7 +169,7 @@ export default userRouter;
  *                 enum: [female, male]
  *               weight:
  *                 type: number
- *               dailyActivityTime: 
+ *               dailyActivityTime:
  *                 type: number
  *               dailyWaterNorm:
  *                 type: dailyWaterNorm
@@ -176,7 +195,7 @@ export default userRouter;
  *                   enum: [female, male]
  *                 weight:
  *                   type: number
- *                 dailyActivityTime: 
+ *                 dailyActivityTime:
  *                   type: number
  *                 dailyWaterNorm:
  *                   type: dailyWaterNorm
@@ -186,36 +205,32 @@ export default userRouter;
  *         description: Not Authorized or User not Found
  *
  *
- * /token:
+ * /refresh:
  *   patch:
- *     summary: Generate Authentication Token
- *     description: Private route to re-generate authentivation token for current user
+ *     summary: Regenerate Authentication Tokens
+ *     description: Private route to re-generate authentication and refresh tokens
  *     tags: ["User API"]
  *     security:
  *       - bearerAuth: []
- *     headers: 
- *       schema: 
+ *     headers:
+ *       schema:
  *         name: Authorization
  *         type: string
  *         example: Bearer abcde_12345
  *     responses:
  *       '200':
- *         description: Token was regenerated successfully 
+ *         description: Token was regenerated successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 token:
+ *                 authToken:
  *                   type: string
- *                   example: ABCD_EFGH_123456
- *                 user:
- *                   type: object
- *                   properties:
- *                     email: 
- *                       type: string
- *                       format: email
- *                       example: Jessica.Smith@gmail.com           
+ *                   description: Issued Authentication token
+ *                 refreshToken:
+ *                   type: string
+ *                   description: Refresh token, can be used to re-issue the Authentication token if expired
  *       '401':
  *         description: Not authorized
  */
