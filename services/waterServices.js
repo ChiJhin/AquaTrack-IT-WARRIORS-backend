@@ -19,9 +19,9 @@ export const localTime = () => {
   return parts.join(":");
 };
 
-export const addWaterDataService = async (data) => {
+export const addWaterDataService = async (data, owner) => {
   try {
-    const addData = await Water.create(data);
+    const addData = await Water.create( {...data, owner: owner.id});
 
     if (!addData) {
       throw HttpError(404, 'Not found')
@@ -33,25 +33,35 @@ export const addWaterDataService = async (data) => {
   };
 };
 
-export const updateWaterDataService = async (id, newData) => {
-  const updatedData = Water.findOneAndUpdate({
-    _id: id
+export const updateWaterDataService = async (id, newData, dataOwner) => {
+ try {
+   const updatedData = await Water.findOneAndUpdate({
+    _id: id,
+    owner: dataOwner
   },
     newData,
     { new: true });
-  
-  if (!updatedData) {
+  console.log(newData)
+  if (!updatedData || (updatedData.owner.toString() !== dataOwner.id)) {
     throw HttpError(404, 'Not found')
   };
 
   return updatedData;
+ } catch (error) {
+  throw error.message
+ }
 };
 
-export const deleteWaterDateService = async (id) => {
+export const deleteWaterDateService = async (id, dataOwner ) => {
   try {
-    const deletedData = await Water.findOneAndDelete({ _id: id });
+    const deletedData = await Water.findOneAndDelete({
+      _id: id,
+      owner: dataOwner
+    });
 
-    if (!deletedData) {
+    if (!deletedData || (deletedData.owner.toString()
+      !== dataOwner.id)) {
+      
       throw HttpError(404, "Not found")
     }
 
@@ -61,7 +71,7 @@ export const deleteWaterDateService = async (id) => {
   }
 };
 
-export const waterDataPerPeriod = async (year, month, day) => {
+export const waterDataPerPeriod = async (year, month, day, dataOwner) => {
 try {
   let query = { date: { $regex: `${day}.${month}.${year}` } };
   
@@ -71,11 +81,13 @@ try {
     if (day) {
       query.date.$regex = `${day}.${month}.${year}`
     }
-  }
+  };
+
+  query.owner = dataOwner.id;
 
   const waterData = await Water.find(query);
 
-  if (!waterData) {
+  if (!waterData || waterData.length === 0) {
     throw HttpError(404, 'Not found')
   }
 

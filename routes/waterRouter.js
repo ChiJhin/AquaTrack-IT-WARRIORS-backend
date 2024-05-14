@@ -1,6 +1,4 @@
 import express from "express";
-import { authenticate } from "../middleware/authenticate.js";
-
 import {
   addWaterData,
   deleteWaterData,
@@ -9,18 +7,18 @@ import {
 } from "../controllers/waterController.js";
 import {
   checkUpdateWaterData,
-  validateQueryByMonth,
+  validateQuery,
 } from "../middleware/waterMiddleware.js";
+import { authenticate } from "../middleware/authenticate.js";
 
 const waterRouter = express.Router();
 
-// waterRouter.use(protect)
-
+waterRouter.use(authenticate);
 waterRouter
-  .post("/", authenticate, addWaterData)
-  .put("/:id", authenticate, checkUpdateWaterData, updateWaterData)
-  .delete("/:id", authenticate, deleteWaterData)
-  .get("/", authenticate, validateQueryByMonth, getWaterDataPerPeriod);
+  .post("/", addWaterData)
+  .put("/:id", checkUpdateWaterData, updateWaterData)
+  .delete("/:id", deleteWaterData)
+  .get("/", validateQuery, getWaterDataPerPeriod);
 
 export default waterRouter;
 

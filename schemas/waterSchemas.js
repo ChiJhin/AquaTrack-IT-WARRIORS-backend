@@ -2,7 +2,6 @@ import Joi from "joi";
 
 const dateRegex = /^(\d{2})\.(\d{2})\.(\d{4})$/
 const timeRegex = /^\d{2}:\d{2}$/;
-const monthlyRegex = /^(\d{2})\.(\d{4})$/
 
 export const updateWaterSchema = Joi.object({
   value: Joi.number()
@@ -21,7 +20,8 @@ export const updateWaterSchema = Joi.object({
 export const querySchema = Joi.object({
   year: Joi.string()
     .pattern(/^\d{4}$/)
-    .message("Year must be yyyy"),
+    .message("Year must be yyyy. Parameter is required")
+    .required(),
   month: Joi.string()
     .pattern(/^\d{2}$/)
     .message('Month must be mm'),

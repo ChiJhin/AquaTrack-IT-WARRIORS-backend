@@ -14,10 +14,10 @@ const waterSchema = new Schema({
     type: String,
     default: () => localTime()
   },
-  // owner: {
-  //     type: Schema.Types.ObjectId,
-  //     ref: 'users',
-  //   }
+  owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'users',
+    }
 }, {
   versionKey: false,
 });
