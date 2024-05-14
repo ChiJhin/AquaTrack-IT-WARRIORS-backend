@@ -1,61 +1,46 @@
 import bcrypt from "bcrypt";
-import gravatar from "gravatar";
-import jwt from "jsonwebtoken";
 
-import { User } from "../models/userModel.js"
-import HttpError from '../helpers/HttpError.js'
+import { User } from "../models/userModel.js";
+import HttpError from "../helpers/HttpError.js";
+import { generateTokens } from "./jwtServices.js";
 
 export const registerDataService = async (email, name, password) => {
-    if ((await User.findOne({ email: email })) !== null) {
-        throw HttpError(409, "Email in use");
-      }
-    
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const avatarURL = gravatar.url(email);
-    
-      return await User.create({
-        password: hashedPassword,
-        email: email,
-        name: name,
-        avatarURL //verificationToken = nanoid() // Additional task
-      });
-}
+  if ((await User.findOne({ email })) !== null) {
+    throw HttpError(409, "Email in use");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const newUser = await User.create({
+    email,
+    name,
+    password: hashedPassword,
+  });
+  return await generateTokens(newUser);
+};
+
 export const loginDataService = async (email, password) => {
-    const foundUser = await User.findOne({ email });
+  const foundUser = await User.findOne({ email });
+  if (!foundUser) throw HttpError(401, "Email or password is wrong");
 
-    if (!foundUser)
-      throw HttpError(401, "Email or password is wrong");
-  
-    const isPasswordMatching = await bcrypt.compare(password, foundUser.password);
-    if (!isPasswordMatching)
-      throw HttpError(401, "Email or password is wrong");
-  
-    const payload = { id: foundUser._id };
-    const generatedToken = jwt.sign(payload, process.env.SECRET);
-  
-    await User.findByIdAndUpdate(
-        foundUser.id, {token: generatedToken});
-    return generatedToken;
-}
+  const isPasswordMatching = await bcrypt.compare(password, foundUser.password);
+  if (!isPasswordMatching) throw HttpError(401, "Email or password is wrong");
 
-export const logoutUserDataService = async (userId) => {
-    await User.findByIdAndUpdate(
-        { _id: userId},
-        { token: null }
-      );
-}
+  return await generateTokens(foundUser);
+};
 
-export const updateUserUserDataService = async (userId, params) => {
-    const foundUser = User.findById(userId);
-    if (!foundUser)
-        throw HttpError(401, 'User not found');
-    return await User.findByIdAndUpdate(userId, params, { new: true });
-}
+export const logoutUserDataService = async (currentUser) => {
+  await User.findByIdAndUpdate(
+    { _id: currentUser._id },
+    { authToken: null, refreshToken: null }
+  );
+};
 
-export const regenerateTokenDataService = async (userId) => {
-    const payload = { id: userId };
-    const generatedToken = jwt.sign(payload, process.env.SECRET);
-    await User.findByIdAndUpdate(
-        userId, {token: generatedToken});
-    return generatedToken;
-}
+export const updateUserUserDataService = async (currentUser, params) => {
+  if (!currentUser) throw HttpError(401, "User not found");
+  return await User.findByIdAndUpdate(currentUser._id, params, { new: true });
+};
+
+export const regenerateTokenDataService = async (currentUser) => {
+  if (!currentUser) throw HttpError(401, "User is not found");
+  return await generateTokens(currentUser);
+};
