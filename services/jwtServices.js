@@ -22,11 +22,11 @@ export const generateTokens = async (user) => {
   const payload = { id: user._id };
 
   const authToken = jwt.sign(payload, process.env.SECRET, {
-    expiresIn: process.env.AUTH_EXPIRATION,
+    expiresIn: '1d' | process.env.AUTH_EXPIRATION,
   });
 
   const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: process.env.REFRESH_TOKEN_EXPIRATION,
+    expiresIn: '30d' | process.env.REFRESH_TOKEN_EXPIRATION,
   });
 
   return await User.findByIdAndUpdate(
