@@ -6,7 +6,7 @@ import {
   updateWaterData,
 } from "../controllers/waterController.js";
 import {
-  checkUpdateWaterData,
+  checkWaterData,
   validateQuery,
 } from "../middleware/waterMiddleware.js";
 import { authenticate } from "../middleware/authenticate.js";
@@ -15,8 +15,8 @@ const waterRouter = express.Router();
 
 waterRouter.use(authenticate);
 waterRouter
-  .post("/", addWaterData)
-  .put("/:id", checkUpdateWaterData, updateWaterData)
+  .post("/", checkWaterData, addWaterData)
+  .put("/:id", checkWaterData, updateWaterData)
   .delete("/:id", deleteWaterData)
   .get("/", validateQuery, getWaterDataPerPeriod);
 

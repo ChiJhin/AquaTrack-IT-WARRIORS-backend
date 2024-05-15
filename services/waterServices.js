@@ -24,7 +24,7 @@ export const addWaterDataService = async (data, owner) => {
     const addData = await Water.create( {...data, owner: owner.id});
 
     if (!addData) {
-      throw HttpError(404, 'Not found')
+      throw HttpError(404, 'User or data not found')
     };
 
     return addData;
@@ -43,7 +43,7 @@ export const updateWaterDataService = async (id, newData, dataOwner) => {
     { new: true });
   console.log(newData)
   if (!updatedData || (updatedData.owner.toString() !== dataOwner.id)) {
-    throw HttpError(404, 'Not found')
+    throw HttpError(404, 'User or data not found')
   };
 
   return updatedData;
@@ -62,7 +62,7 @@ export const deleteWaterDateService = async (id, dataOwner ) => {
     if (!deletedData || (deletedData.owner.toString()
       !== dataOwner.id)) {
       
-      throw HttpError(404, "Not found")
+      throw HttpError(404, 'User or data not found')
     }
 
     return deletedData;
@@ -85,10 +85,10 @@ try {
 
   query.owner = dataOwner.id;
 
-  const waterData = await Water.find(query);
+  const waterData = await Water.find(query).sort({date: -1});
 
   if (!waterData || waterData.length === 0) {
-    throw HttpError(404, 'Not found')
+    throw HttpError(404, 'User or data not found')
   }
 
   let totalValue = 0;
