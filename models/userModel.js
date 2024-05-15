@@ -17,8 +17,7 @@ const userSchema = new Schema(
       match: emailRegexp,
     },
     name: {
-      type: String,
-      required: true,
+      type: String
     },
     gender: {
       type: String,
