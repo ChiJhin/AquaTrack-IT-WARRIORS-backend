@@ -1,3 +1,4 @@
+import path from "path";
 import {
   loginDataService,
   logoutUserDataService,
@@ -56,7 +57,23 @@ export const current = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-  res.json(await updateUserUserDataService(req.user, req.body));
+
+    if (req.file){
+        const storeImage = path.join(process.cwd(), 'avatars');
+        const { path: temporaryName, originalname } = req.file;
+        const avatarURL = path.join(storeImage, originalname);
+        try {
+        await fs.rename(temporaryName, avatarURL);
+        } catch (err) {
+        await fs.unlink(temporaryName);
+        return next(err);
+        }
+        await updateUserUserDataService(req.user, {...req.body, avatarURL});
+    }
+    else
+        await updateUserUserDataService(req.user, req.body);
+    
+  res.status(200, {message: "User information have been updated successfully"});
 };
 
 export const refreshTokens = async (req, res) => {
