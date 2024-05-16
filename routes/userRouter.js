@@ -24,7 +24,7 @@ userRouter
   )
   .get("/logout", authenticate, errorHandling(controllers.logout))
   .get("/current", authenticate, errorHandling(controllers.current))
-  .patch("/update", authenticate, upload.single("avatars",), errorHandling(controllers.updateUser))
+  .patch("/update", authenticate, upload.single("avatar",), errorHandling(controllers.updateUser))
   .patch(
     "/refresh",
     authenticateRefresh,
