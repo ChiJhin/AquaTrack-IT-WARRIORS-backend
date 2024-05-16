@@ -35,7 +35,7 @@ const userSchema = new Schema(
     },
     dailyWaterNorm: {
       type: Number,
-      default: 0,
+      default: 1.5,
     },
     avatarURL: {
       type: String,
