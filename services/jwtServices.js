@@ -20,13 +20,12 @@ export const checkToken = (token, secret = process.env.SECRET) => {
 
 export const generateTokens = async (user) => {
   const payload = { id: user._id };
-
   const authToken = jwt.sign(payload, process.env.SECRET, {
-    expiresIn: '1d' | process.env.AUTH_EXPIRATION,
+    expiresIn: process.env.AUTH_EXPIRATION || '1d'
   });
 
   const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: '30d' | process.env.REFRESH_TOKEN_EXPIRATION,
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRATION || '30d',
   });
 
   return await User.findByIdAndUpdate(

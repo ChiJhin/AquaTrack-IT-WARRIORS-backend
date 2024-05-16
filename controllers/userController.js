@@ -1,3 +1,5 @@
+import path from "path";
+import { promises as fs } from "fs";
 import {
   loginDataService,
   logoutUserDataService,
@@ -5,6 +7,7 @@ import {
   registerDataService,
   updateUserUserDataService,
 } from "../services/userServices.js";
+import { error } from "console";
 
 export const register = async (req, res, next) => {
   const { email, name, password } = req.body;
@@ -55,8 +58,25 @@ export const current = async (req, res) => {
   });
 };
 
-export const updateUser = async (req, res) => {
-  res.json(await updateUserUserDataService(req.user, req.body));
+export const updateUser = async (req, res, next) => {
+
+    if (req.file){
+        const storeImage = path.join(process.cwd(), 'public', 'avatars');
+        const { path: temporaryName, originalname } = req.file;
+        const newFilePath = path.join(storeImage, originalname);
+        try {
+        await fs.rename(temporaryName, newFilePath);
+        } catch (err) {
+          await fs.unlink(temporaryName);
+          next(err);
+        }
+        const avatarURL = path.join("/avatars", originalname)
+        await updateUserUserDataService(req.user, {...req.body, avatarURL});
+    }
+    else
+        await updateUserUserDataService(req.user, req.body);
+    
+  res.status(200).json({message: "User information has been updated successfully"});
 };
 
 export const refreshTokens = async (req, res) => {
