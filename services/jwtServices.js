@@ -14,7 +14,6 @@ export const checkToken = (token, secret = process.env.SECRET) => {
     const { id } = jwt.verify(token, secret);
     return id;
   } catch (error) {
-    console.log("Errror:", error)
     throw HttpError(401, "Unauthorized");
   }
 };

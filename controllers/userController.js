@@ -67,15 +67,11 @@ export const updateUser = async (req, res, next) => {
         try {
         await fs.rename(temporaryName, newFilePath);
         } catch (err) {
-          console.log("Error", error);
           await fs.unlink(temporaryName);
-          console.log("Unlinked");
           next(err);
         }
         const avatarURL = path.join("/avatars", originalname)
-        console.log("Updating to ", avatarURL)
         await updateUserUserDataService(req.user, {...req.body, avatarURL});
-        console.log("Done Updating to ", avatarURL)
     }
     else
         await updateUserUserDataService(req.user, req.body);

@@ -22,7 +22,6 @@ export const updateWaterData = catchAsyncErr(async (req, res) => {
     
     if (isVlidId) {
       const updated = await updateWaterDataService(req.params.id, req.body, req.user);
-console.log(updated)
       if (updated) {
         res.status(200).json(updated)
       } else {
