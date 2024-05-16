@@ -1,4 +1,5 @@
 import path from "path";
+import { promises as fs } from "fs";
 import {
   loginDataService,
   logoutUserDataService,
@@ -6,6 +7,7 @@ import {
   registerDataService,
   updateUserUserDataService,
 } from "../services/userServices.js";
+import { error } from "console";
 
 export const register = async (req, res, next) => {
   const { email, name, password } = req.body;
@@ -56,24 +58,29 @@ export const current = async (req, res) => {
   });
 };
 
-export const updateUser = async (req, res) => {
+export const updateUser = async (req, res, next) => {
 
     if (req.file){
-        const storeImage = path.join(process.cwd(), 'avatars');
+        const storeImage = path.join(process.cwd(), 'public', 'avatars');
         const { path: temporaryName, originalname } = req.file;
-        const avatarURL = path.join(storeImage, originalname);
+        const newFilePath = path.join(storeImage, originalname);
         try {
-        await fs.rename(temporaryName, avatarURL);
+        await fs.rename(temporaryName, newFilePath);
         } catch (err) {
-        await fs.unlink(temporaryName);
-        return next(err);
+          console.log("Error", error);
+          await fs.unlink(temporaryName);
+          console.log("Unlinked");
+          next(err);
         }
+        const avatarURL = path.join("/avatars", originalname)
+        console.log("Updating to ", avatarURL)
         await updateUserUserDataService(req.user, {...req.body, avatarURL});
+        console.log("Done Updating to ", avatarURL)
     }
     else
         await updateUserUserDataService(req.user, req.body);
     
-  res.status(200, {message: "User information have been updated successfully"});
+  res.status(200).json({message: "User information has been updated successfully"});
 };
 
 export const refreshTokens = async (req, res) => {
