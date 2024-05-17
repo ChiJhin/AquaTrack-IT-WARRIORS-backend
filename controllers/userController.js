@@ -5,26 +5,30 @@ import {
   logoutUserDataService,
   regenerateTokenDataService,
   registerDataService,
+  safeUserCloneDataService,
   updateUserUserDataService,
 } from "../services/userServices.js";
-import { error } from "console";
 
-export const register = async (req, res, next) => {
+export const register = async (req, res) => {
   const { email, name, password } = req.body;
   const newUser = await registerDataService(email, name, password);
 
+  newUser.toObject();
   res.status(201).json({
-    email: newUser.email,
+    user: safeUserCloneDataService(newUser),
     token: newUser.token,
     refreshToken: newUser.refreshToken,
   });
 };
 
 export const login = async (req, res) => {
+  console.log(1);
   const { email, password } = req.body;
+  console.log(2);
   const user = await loginDataService(email, password);
+  console.log(3, user);
   res.status(200).json({
-    email,
+    user: safeUserCloneDataService(user),
     token: user.token,
     refreshToken: user.refreshToken,
   });
@@ -36,26 +40,7 @@ export const logout = async (req, res) => {
 };
 
 export const current = async (req, res) => {
-  const {
-    _id,
-    email,
-    name,
-    gender,
-    weight,
-    dailyActivityTime,
-    dailyWaterNorm,
-    avatarURL,
-  } = req.user;
-  res.json({
-    _id,
-    email,
-    name,
-    gender,
-    weight,
-    dailyActivityTime,
-    dailyWaterNorm,
-    avatarURL,
-  });
+  res.json(safeUserCloneDataService(req.user));
 };
 
 export const updateUser = async (req, res, next) => {

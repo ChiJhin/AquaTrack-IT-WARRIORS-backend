@@ -44,3 +44,8 @@ export const regenerateTokenDataService = async (currentUser) => {
   if (!currentUser) throw HttpError(401, "User is not found");
   return await generateTokens(currentUser);
 };
+
+export const safeUserCloneDataService = (user) => {
+  const { _id, token, refreshToken, password, ...cloneUser } = user.toObject();
+  return cloneUser;
+};
