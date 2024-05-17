@@ -9,7 +9,6 @@ import { errorHandling } from "../helpers/errorHandlingWrapper.js";
 import * as controllers from "../controllers/userController.js";
 import { upload } from "../helpers/upload.js";
 
-
 const userRouter = express.Router();
 userRouter
   .post(
@@ -24,7 +23,12 @@ userRouter
   )
   .get("/logout", authenticate, errorHandling(controllers.logout))
   .get("/current", authenticate, errorHandling(controllers.current))
-  .patch("/update", authenticate, upload.single("avatar",), errorHandling(controllers.updateUser))
+  .patch(
+    "/update",
+    authenticate,
+    upload.single("avatar"),
+    errorHandling(controllers.updateUser)
+  )
   .patch(
     "/refresh",
     authenticateRefresh,
@@ -48,13 +52,13 @@ export default userRouter;
  *           schema:
  *             type: object
  *             properties:
- *               name:
- *                 type: string
  *               email:
+ *                 required: true
  *                 type: string
  *                 format: email
  *                 example: Jessica.Smith@gmail.com
  *               password:
+ *                 required: true
  *                 type: string
  *                 format: password
  *     responses:
@@ -65,12 +69,9 @@ export default userRouter;
  *             schema:
  *               type: object
  *               properties:
- *                 email:
- *                   type: string
- *                   format: email
- *                   example: Jessica.Smith@gmail.com
- *                   description: Email of the current user
- *                 authToken:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 token:
  *                   type: string
  *                   description: Issued Authentication token
  *                 refreshToken:
@@ -107,7 +108,9 @@ export default userRouter;
  *             schema:
  *               type: object
  *               properties:
- *                 authToken:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 token:
  *                   type: string
  *                   description: Issued Authentication token
  *                 refreshToken:
@@ -141,6 +144,19 @@ export default userRouter;
  *         name: Authorization
  *         type: string
  *         example: Bearer abcde_12345
+ *     responses:
+ *       '200':
+ *         description: Logged In Successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       '401':
+ *         description: Not Authorized
+
  *
  * /update:
  *   patch:
@@ -158,51 +174,16 @@ export default userRouter;
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *                 format: email
- *                 example: Jessica.Smith@gmail.com
- *               gender:
- *                 type: string
- *                 enum: [female, male]
- *               weight:
- *                 type: number
- *               dailyActivityTime:
- *                 type: number
- *               dailyWaterNorm:
- *                 type: dailyWaterNorm
- *               avatarURL:
- *                 type: string
+ *             $ref: '#/components/schemas/User'
  *     responses:
  *       '200':
  *         description: Updated successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               minItems: 1
- *               properties:
- *                 name:
- *                   type: string
- *                 email:
- *                   type: string
- *                   format: email
- *                   example: Jessica.Smith@gmail.com
- *                 gender:
- *                   type: string
- *                   enum: [female, male]
- *                 weight:
- *                   type: number
- *                 dailyActivityTime:
- *                   type: number
- *                 dailyWaterNorm:
- *                   type: dailyWaterNorm
- *                 avatarURL:
- *                   type: string
+ *               $ref: '#/components/schemas/User'
+ *               avatar:
+ *                   type: file
  *       '401':
  *         description: Not Authorized or User not Found
  *
@@ -225,14 +206,38 @@ export default userRouter;
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 authToken:
- *                   type: string
- *                   description: Issued Authentication token
- *                 refreshToken:
- *                   type: string
- *                   description: Refresh token, can be used to re-issue the Authentication token if expired
+ *           type: object
+ *           properties:
+ *             token:
+ *               type: string
+ *               description: Issued Authentication token
+ *             refreshToken:
+ *               type: string
+ *               description: Refresh token, can be used to re-issue the Authentication token if expired
  *       '401':
  *         description: Not authorized
+ *
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       minItems: 1
+ *       properties:
+ *         name:
+ *           type: string
+ *         email:
+ *           type: string
+ *           format: email
+ *           example: Jessica.Smith@gmail.com
+ *         gender:
+ *           type: string
+ *           enum: [female, male]
+ *         weight:
+ *           type: number
+ *         dailyActivityTime:
+ *           type: number
+ *         dailyWaterNorm:
+ *           type: number
+ *         avatarURL:
+ *           type: string
  */

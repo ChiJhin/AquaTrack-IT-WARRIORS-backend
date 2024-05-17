@@ -20,7 +20,7 @@ export const checkToken = (token, secret = process.env.SECRET) => {
 
 export const generateTokens = async (user) => {
   const payload = { id: user._id };
-  const authToken = jwt.sign(payload, process.env.SECRET, {
+  const token = jwt.sign(payload, process.env.SECRET, {
     expiresIn: process.env.AUTH_EXPIRATION || '1d'
   });
 
@@ -30,7 +30,7 @@ export const generateTokens = async (user) => {
 
   return await User.findByIdAndUpdate(
     user.id,
-    { authToken, refreshToken },
+    { token, refreshToken },
     { new: true }
   );
 };

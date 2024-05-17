@@ -31,7 +31,7 @@ export const loginDataService = async (email, password) => {
 export const logoutUserDataService = async (currentUser) => {
   await User.findByIdAndUpdate(
     { _id: currentUser._id },
-    { authToken: null, refreshToken: null }
+    { token: null, refreshToken: null }
   );
 };
 
@@ -43,4 +43,9 @@ export const updateUserUserDataService = async (currentUser, params) => {
 export const regenerateTokenDataService = async (currentUser) => {
   if (!currentUser) throw HttpError(401, "User is not found");
   return await generateTokens(currentUser);
+};
+
+export const safeUserCloneDataService = (user) => {
+  const { _id, token, refreshToken, password, ...cloneUser } = user.toObject();
+  return cloneUser;
 };
