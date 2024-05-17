@@ -31,7 +31,7 @@ export const loginDataService = async (email, password) => {
 export const logoutUserDataService = async (currentUser) => {
   await User.findByIdAndUpdate(
     { _id: currentUser._id },
-    { authToken: null, refreshToken: null }
+    { token: null, refreshToken: null }
   );
 };
 

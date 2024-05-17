@@ -9,7 +9,7 @@ export const authenticate = async (req, res, next) => {
     const id = checkToken(token);
     const currentUser = id ? await User.findById(id) : null;
 
-    if (id && currentUser && currentUser.authToken === token) {
+    if (id && currentUser && currentUser.token === token) {
       req.user = currentUser;
       next();
     } else

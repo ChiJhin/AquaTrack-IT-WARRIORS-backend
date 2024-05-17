@@ -17,7 +17,7 @@ const userSchema = new Schema(
       match: emailRegexp,
     },
     name: {
-      type: String
+      type: String,
     },
     gender: {
       type: String,
@@ -39,7 +39,7 @@ const userSchema = new Schema(
     avatarURL: {
       type: String,
     },
-    authToken: {
+    token: {
       type: String,
       default: null,
     },

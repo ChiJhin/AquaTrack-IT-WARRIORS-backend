@@ -9,7 +9,6 @@ import { errorHandling } from "../helpers/errorHandlingWrapper.js";
 import * as controllers from "../controllers/userController.js";
 import { upload } from "../helpers/upload.js";
 
-
 const userRouter = express.Router();
 userRouter
   .post(
@@ -24,7 +23,12 @@ userRouter
   )
   .get("/logout", authenticate, errorHandling(controllers.logout))
   .get("/current", authenticate, errorHandling(controllers.current))
-  .patch("/update", authenticate, upload.single("avatar",), errorHandling(controllers.updateUser))
+  .patch(
+    "/update",
+    authenticate,
+    upload.single("avatar"),
+    errorHandling(controllers.updateUser)
+  )
   .patch(
     "/refresh",
     authenticateRefresh,
@@ -70,7 +74,7 @@ export default userRouter;
  *                   format: email
  *                   example: Jessica.Smith@gmail.com
  *                   description: Email of the current user
- *                 authToken:
+ *                 token:
  *                   type: string
  *                   description: Issued Authentication token
  *                 refreshToken:
@@ -107,7 +111,7 @@ export default userRouter;
  *             schema:
  *               type: object
  *               properties:
- *                 authToken:
+ *                 token:
  *                   type: string
  *                   description: Issued Authentication token
  *                 refreshToken:
@@ -227,7 +231,7 @@ export default userRouter;
  *             schema:
  *               type: object
  *               properties:
- *                 authToken:
+ *                 token:
  *                   type: string
  *                   description: Issued Authentication token
  *                 refreshToken:
