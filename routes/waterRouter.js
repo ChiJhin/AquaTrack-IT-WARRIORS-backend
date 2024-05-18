@@ -3,10 +3,14 @@ import {
   addWaterData,
   deleteWaterData,
   getWaterDataPerPeriod,
+  getWaterPerDay,
+  getWaterPerMonth,
   updateWaterData,
 } from "../controllers/waterController.js";
 import {
   checkWaterData,
+  validateDay,
+  validateMonth,
   validateQuery,
 } from "../middleware/waterMiddleware.js";
 import { authenticate } from "../middleware/authenticate.js";
@@ -18,7 +22,9 @@ waterRouter
   .post("/", checkWaterData, addWaterData)
   .put("/:id", checkWaterData, updateWaterData)
   .delete("/:id", deleteWaterData)
-  .get("/", validateQuery, getWaterDataPerPeriod);
+  .get("/", validateQuery, getWaterDataPerPeriod)
+  .get("/day", validateDay, getWaterPerDay)
+  .get("/month", validateMonth, getWaterPerMonth);
 
 export default waterRouter;
 
