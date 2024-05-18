@@ -29,8 +29,8 @@ const userSchema = new Schema(
       default: 0,
     },
     dailyActivityTime: {
-      type: Number,
-      default: 0,
+      type: String,
+      default: "00:00",
     },
     dailyWaterNorm: {
       type: Number,
@@ -84,7 +84,7 @@ const updateUserSchema = Joi.object({
   email: Joi.string().pattern(emailRegexp),
   gender: Joi.string().valid(...genderEnum),
   weight: Joi.number(),
-  dailyActivityTime: Joi.number(),
+  dailyActivityTime: Joi.string(),
   dailyWaterNorm: Joi.number(),
   avatarURL: Joi.string(),
 });
