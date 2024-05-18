@@ -37,7 +37,11 @@ export const logoutUserDataService = async (currentUser) => {
 
 export const updateUserUserDataService = async (currentUser, params) => {
   if (!currentUser) throw HttpError(401, "User not found");
-  return await User.findByIdAndUpdate(currentUser._id, params, { new: true });
+  try {
+    return await User.findByIdAndUpdate(currentUser._id, params, { new: true });
+  } catch (error) {
+    throw HttpError(501, error);
+  }
 };
 
 export const regenerateTokenDataService = async (currentUser) => {
