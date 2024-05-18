@@ -1,19 +1,37 @@
 import { isValidObjectId } from "mongoose";
 
 import HttpError from "../helpers/HttpError.js";
-import { addWaterDataService, deleteWaterDateService, updateWaterDataService, waterDataPerPeriod } from "../services/waterServices.js"
+import { addWaterDataService, deleteWaterDateService, getWaterDataByDay, localDate, updateWaterDataService, waterDataPerPeriod } from "../services/waterServices.js"
 import { catchAsyncErr } from "../helpers/catchAsyncError.js";
 
 export const addWaterData = catchAsyncErr(async (req, res) => {
-    const waterData = await addWaterDataService(req.body, req.user);
+  let currentDate = new Date(); 
+  
+  if (req.body.date) {
+    const dateString = req.body.date;
+    const dateParts = dateString.split('.');
     
+    if (dateParts.length === 3) {
+      const day = parseInt(dateParts[0], 10);
+      const month = parseInt(dateParts[1], 10) - 1;
+      const year = parseInt(dateParts[2], 10);
+      
+      if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+        currentDate = new Date(year, month, day);
+      };
+    };
+  };
+  
+  const waterData = await addWaterDataService({...req.body, date: localDate(currentDate)}, req.user);
+  
   if (waterData) {
-      res.status(201).json(waterData)
-    } else {
-      res.status(404).json({
-        message: 'Not found'
-      })
-    }
+    const waterDatdByDate = await getWaterDataByDay(currentDate);
+    res.status(201).json(waterDatdByDate);
+  } else {
+    res.status(404).json({
+      message: 'Data not found'
+    });
+  }
 });
 
 export const updateWaterData = catchAsyncErr(async (req, res) => {
@@ -22,16 +40,17 @@ export const updateWaterData = catchAsyncErr(async (req, res) => {
     
     if (isVlidId) {
       const updated = await updateWaterDataService(req.params.id, req.body, req.user);
+
       if (updated) {
         res.status(200).json(updated)
       } else {
         res.status(404).json({
-          message: 'Not found1'
+          message: 'Data not found'
         })
       }
     } else {
       res.status(404).json({
-        message: 'Not found2'
+        message: 'Data not found'
       })
     }
 });
@@ -40,13 +59,13 @@ export const deleteWaterData = catchAsyncErr(async (req, res) => {
   const isValide = isValidObjectId(req.params.id);
 
   if (!isValide) {
-    throw HttpError(404, 'Not found')
+    throw HttpError(404, 'Data not found')
   }
 
   const deletedData = await deleteWaterDateService(req.params.id, req.user);
 
   if (!deletedData) {
-    throw HttpError(404, 'Not found')
+    throw HttpError(404, 'Data not found')
   }
 
   res.status(200).json({

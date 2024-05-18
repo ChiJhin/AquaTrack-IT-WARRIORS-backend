@@ -1,11 +1,9 @@
 import { Water } from "../models/waterModel.js"
 import HttpError from '../helpers/HttpError.js'
 
-export const localDate = () => {
-  const milliseconds = Date.now();
-  const date = new Date(milliseconds);
-  
-  return date.toLocaleDateString();
+export const localDate = (date) => {
+  const formattedDate = new Date(date).toLocaleDateString();
+  return formattedDate;
 };
 
 export const localTime = () => {
@@ -27,7 +25,12 @@ export const addWaterDataService = async (data, owner) => {
       throw HttpError(404, 'User or data not found')
     };
 
-    return addData;
+     let totalValue = 0;
+    addData.forEach(data => {
+      totalValue += data.value
+    });
+
+    return {addData, totalValue};
   } catch (error) {
     error.message
   };
@@ -41,7 +44,7 @@ export const updateWaterDataService = async (id, newData, dataOwner) => {
   },
     newData,
     { new: true });
-  console.log(newData)
+ 
   if (!updatedData || (updatedData.owner.toString() !== dataOwner.id)) {
     throw HttpError(404, 'User or data not found')
   };
@@ -73,17 +76,13 @@ export const deleteWaterDateService = async (id, dataOwner ) => {
 
 export const waterDataPerPeriod = async (year, month, day, dataOwner) => {
 try {
-  let query = { date: { $regex: `${day}.${month}.${year}` } };
+  let query = { owner: dataOwner.id};
   
-  if (month) {
-    query.date.$regex = `${month}.${year}`;
-
-    if (day) {
-      query.date.$regex = `${day}.${month}.${year}`
-    }
+  if (day) {
+    query.date = {$regex: `${day}.${month}.${year}`};
+  } else if (month) {
+    query.date = {$regex: `${month}.${year}`}
   };
-
-  query.owner = dataOwner.id;
 
   const waterData = await Water.find(query).sort({date: -1});
 
@@ -91,15 +90,29 @@ try {
     throw HttpError(404, 'User or data not found')
   }
 
-  let totalValue = 0;
-  waterData.forEach(data => {
-    totalValue += data.value
-  })
-
-  return {waterData, totalValue};
+  if (day) {
+     let totalValue = 0;
+    waterData.forEach(data => {
+      totalValue += data.value
+    });
+    
+    return {waterData, totalValue}
+  }else {
+      const values = waterData.map(data => data.value);
+      return values;
+    }
 } catch (error) {
   throw error.message
 }
 };
+
+export const getWaterDataByDay = async (date) => {
+  const currentDate = localDate(date);
+  
+  const waterDataByDay = await Water.find({ date: currentDate });
+
+  return waterDataByDay;
+};
+
 
 

@@ -3,7 +3,7 @@ import Joi from "joi";
 const dateRegex = /^((0[1-9]|[1-2][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4})$/;
 const timeRegex = /^(?:2[0-4]|[01]?\d):(?:[0-5]\d)$/;
 
-const dayRegex = /^(?:2[0-4]|[01]?\d):(?:[0-5]\d)$/;
+const dayRegex = /^(0[1-9]|[1-2][0-9]|3[01])$/;
 const monthRegex = /^(0[1-9]|1[0-2])$/;
 const yearRegex = /^(20[0-6][0-9]|2070)$/;
 
