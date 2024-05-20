@@ -43,7 +43,6 @@ export const updateWaterDataService = async (id, newData, dataOwner) => {
       newData,
       { new: true }
     );
-    console.log(newData);
     if (!updatedData || updatedData.owner.toString() !== dataOwner.id) {
       throw HttpError(404, "User or data not found");
     }

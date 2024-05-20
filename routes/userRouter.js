@@ -24,12 +24,6 @@ userRouter
   )
   .get("/logout", authenticate, errorHandling(controllers.logout))
   .get("/current", authenticate, errorHandling(controllers.current))
-  /*.patch(
-    "/update",
-    authenticate,
-    upload.single("avatar"),
-    errorHandling(controllers.updateUser)
-  )*/
   .patch(
     "/update",
     authenticate,
@@ -47,7 +41,7 @@ export default userRouter;
 
 /**
  * @swagger
- * /register:
+ * /api//register:
  *   post:
  *     summary: Registering a user
  *     description: Public route to register a user
@@ -89,7 +83,7 @@ export default userRouter;
  *       '500':
  *         description: Unexpected Server Error.
  *
- * /login:
+ * /api/login:
  *   post:
  *     summary: User Login Route
  *     description: Public route for user login
@@ -126,7 +120,7 @@ export default userRouter;
  *       '401':
  *         description: Not Authorized
  *
- * /logout:
+ * /api/logout:
  *   get:
  *     summary: Log Out Current User
  *     description: Private route to logout current user
@@ -139,7 +133,7 @@ export default userRouter;
  *         type: string
  *         example: Bearer abcde_12345
  *
- * /current:
+ * /api/current:
  *   get:
  *     summary: Current User Information
  *     description: Private route which returns current user information
@@ -165,7 +159,7 @@ export default userRouter;
  *         description: Not Authorized
 
  *
- * /update:
+ * /api/update:
  *   patch:
  *     summary: Update User Settings
  *     description: Private route to update user settings
@@ -195,7 +189,7 @@ export default userRouter;
  *         description: Not Authorized or User not Found
  *
  *
- * /refresh:
+ * /api/refresh:
  *   patch:
  *     summary: Regenerate Authentication Tokens
  *     description: Private route to re-generate authentication and refresh tokens
