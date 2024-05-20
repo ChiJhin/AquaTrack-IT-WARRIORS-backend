@@ -8,6 +8,7 @@ import {
   safeUserCloneDataService,
   updateUserUserDataService,
 } from "../services/userServices.js";
+import { resizeImg } from "../services/imgServices.js";
 
 export const register = async (req, res) => {
   const { email, name, password } = req.body;
@@ -43,24 +44,46 @@ export const current = async (req, res) => {
   res.json(safeUserCloneDataService(req.user));
 };
 
-export const updateUser = async (req, res, next) => {
+/*export const updateUser = async (req, res, next) => {
+  let editedUser = {};
   if (req.file) {
+   
     const storeImage = path.join(process.cwd(), "public", "avatars");
     const { path: temporaryName, originalname } = req.file;
     const newFilePath = path.join(storeImage, originalname);
     try {
       await fs.rename(temporaryName, newFilePath);
     } catch (err) {
+      
       await fs.unlink(temporaryName);
       next(err);
     }
     const avatarURL = path.join("/avatars", originalname);
-    await updateUserUserDataService(req.user, { ...req.body, avatarURL });
-  } else await updateUserUserDataService(req.user, req.body);
+    editedUser = await updateUserUserDataService(req.user, {
+      ...req.body,
+      avatarURL,
+    });
+  } else {
+    editedUser = await updateUserUserDataService(req.user, req.body);
+  }
 
-  res
-    .status(200)
-    .json({ message: "User information has been updated successfully" });
+  res.status(200).json(editedUser);
+};*/
+
+export const updateUser = async (req, res, next) => {
+  let editedUser = {};
+
+  if (req.file) {
+    const avatarURL = await resizeImg(req.file);
+    editedUser = await updateUserUserDataService(req.user, {
+      ...req.body,
+      avatarURL,
+    });
+  } else {
+    editedUser = await updateUserUserDataService(req.user, req.body);
+  }
+
+  res.status(200).json(editedUser);
 };
 
 export const refreshTokens = async (req, res) => {

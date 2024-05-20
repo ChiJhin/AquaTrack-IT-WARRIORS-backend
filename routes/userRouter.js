@@ -8,6 +8,7 @@ import { Schemas } from "../models/userModel.js";
 import { errorHandling } from "../helpers/errorHandlingWrapper.js";
 import * as controllers from "../controllers/userController.js";
 import { upload } from "../helpers/upload.js";
+import { uploadImage } from "../middleware/imgMiddleware.js";
 
 const userRouter = express.Router();
 userRouter
@@ -23,10 +24,16 @@ userRouter
   )
   .get("/logout", authenticate, errorHandling(controllers.logout))
   .get("/current", authenticate, errorHandling(controllers.current))
-  .patch(
+  /*.patch(
     "/update",
     authenticate,
     upload.single("avatar"),
+    errorHandling(controllers.updateUser)
+  )*/
+  .patch(
+    "/update",
+    authenticate,
+    uploadImage,
     errorHandling(controllers.updateUser)
   )
   .patch(
