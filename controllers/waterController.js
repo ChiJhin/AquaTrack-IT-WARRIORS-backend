@@ -36,12 +36,12 @@ export const updateWaterData = catchAsyncErr(async (req, res) => {
       res.status(200).json(updated);
     } else {
       res.status(404).json({
-        message: "Not found1",
+        message: "Not found",
       });
     }
   } else {
     res.status(404).json({
-      message: "Not found2",
+      message: "Not found",
     });
   }
 });
