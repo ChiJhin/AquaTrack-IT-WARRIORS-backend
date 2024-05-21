@@ -80,7 +80,7 @@ export const updateUser = async (req, res, next) => {
     editedUser = await updateUserUserDataService(req.user, req.body);
   }
 
-  res.status(200).json(editedUser);
+  res.status(200).json(safeUserCloneDataService(editedUser));
 };
 
 export const refreshTokens = async (req, res) => {
