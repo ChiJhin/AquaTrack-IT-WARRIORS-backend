@@ -4,7 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
-import { globalErrorHandler } from "./controllers/errorController.js";
+import { globalErrorHandler } from "./helpers/globalErrorHandler.js";
 import userRouter from "./routes/userRouter.js";
 import waterRouter from "./routes/waterRouter.js";
 import swaggerUi from "swagger-ui-express";

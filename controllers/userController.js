@@ -23,11 +23,8 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  console.log(1);
   const { email, password } = req.body;
-  console.log(2);
   const user = await loginDataService(email, password);
-  console.log(3, user);
   res.status(200).json({
     user: safeUserCloneDataService(user),
     token: user.token,

@@ -13,7 +13,7 @@ export async function resizeImg(file) {
     await img.write(path.join(fullPath, file.filename));
     return path.join("avatars", file.filename);
   } catch (error) {
-    console.log("resize error");
+    console.log("Resize error:", error);
     throw HttpError(500);
   }
 }
